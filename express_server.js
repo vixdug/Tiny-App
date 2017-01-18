@@ -47,10 +47,15 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-let longURL = urlDatabase[req.params.shortURL];
-console.log(urlDatabase); //needs to check for http and if not add it
+let longURL = urlDatabase[req.params.shortURL]; // ADD: if longURL = null - go to 401
+console.log(urlDatabase); // ADD: needs to check for http and if not add it
   res.redirect(longURL);
 });
+
+app.post("/urls/:id/delete", (req, res) => {
+delete urlDatabase[req.params.id]
+res.redirect(302,"http://localhost:8080/urls/");
+}); // deleted + redirect
 
 app.post("/urls/create", (req, res) => {
   let longURL = req.body["longURL"];
@@ -60,7 +65,7 @@ app.post("/urls/create", (req, res) => {
   urlDatabase[shortURL] = longURL
  console.log(urlDatabase);
 
-  res.redirect(302,'http://localhost:8080/urls/'+shortURL);
+  res.redirect(302,`http://localhost:8080/urls/${shortURL}`);
   // res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 

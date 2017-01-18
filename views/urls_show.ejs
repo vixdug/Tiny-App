@@ -1,16 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html  lang="en">
 <head>
   <title>Tiny App</title>
+  <% include ../views/partials/_head %>
 </head>
+
 <body>
   <header>
       <% include ../views/partials/_header %>
     </header>
-  <h1> Display URL:  </h1>
+  <h2> Display URL:  </h2>
   <b> Your Full URL: </b>
   <%= longURL %>
   <br>
   <b> Your Short Form: </b> <%= shortURL %> </li>
 </body>
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">The URL that you have shortened </div>
+
+  <!-- Table -->
+  <table class="table">
+  <thead>
+    <tr>
+    <th> URLS </th>
+    <th> Short URL </th>
+    <th> Long URL </th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <th scope="row">1</th>
+    <td> <%= shortURL %> </td>
+    <td> <%= longURL %> </td>
+  </tr>
+  </tbody>
+</table>
+</div>
+
+  <nav aria-label="...">
+    <ul class="pager">
+      <li class="previous"><a href="/urls"><span aria-hidden="true">&larr;</span> Go Back Home</a></li>
+    </ul>
+  </nav>
+
+
+
 </html>

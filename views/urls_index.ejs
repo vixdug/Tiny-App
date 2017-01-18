@@ -1,8 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html  lang="en">
 <head>
   <title>TinyApp</title>
+  <% include ../views/partials/_head %>
+
 </head>
+<div>
 <body>
 
   <header>
@@ -11,8 +14,13 @@
 
   <% for(var urlDatabase in urls) { %>
     <li><%= urlDatabase + ': ' + urls[urlDatabase] %></li>
-    <% } %>
+    <form method="POST" action="/urls/<%= urlDatabase %>/delete">
+        <input type="submit" value="Delete"></form> <%}  %>
+<% console.log(urlDatabase) %>
 <br>
-  <a href="urls/new">Shorten a new URL</a>
+<br>
+  <a href="urls/new" type="button" class="btn btn-info" >Shorten a new URL</a>
+
+
 </body>
-</html>
+</div>

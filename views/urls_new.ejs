@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head></head>
+  <head>
+    <% include ../views/partials/_head %>
+
+  </head>
   <body style="font-size:20px; padding:50px;">
     <% include partials/_header %>
     <form action="/urls/create" method="POST" style="margin:150px;">
@@ -9,4 +12,11 @@
       <input type="submit" value="Submit">
     </form>
   </body>
+
+  <nav aria-label="...">
+    <ul class="pager">
+      <li class="previous"><a href="/urls"><span aria-hidden="true">&larr;</span> Back</a></li>
+    </ul>
+  </nav>
+
 </html>
