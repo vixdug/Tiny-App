@@ -38,11 +38,29 @@
 </table>
 </div>
 
-  <nav aria-label="...">
-    <ul class="pager">
-      <li class="previous"><a href="/urls"><span aria-hidden="true">&larr;</span> Go Back Home</a></li>
-    </ul>
-  </nav>
+
+<p>&nbsp&nbsp&nbsp Edit your URL:</p>
+<form method="post" action="/urls/<%=shortURL%>/edit">
+  <div class="col-lg-6">
+    <div class="input-group">
+      <input type="text" id="newLongURL" class="form-control" name="newLongURL" placeholder="<%=longURL %>">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="submit"  value="Submit">Edit!</button>
+      </span>
+    </div>
+  </div>
+</div>
+</form>
+
+
+<br>
+<br>
+
+<nav aria-label="...">
+  <ul class="pager">
+    <li class="previous"><a href="/urls"><span aria-hidden="true">&larr;</span> Go Back Home</a></li>
+  </ul>
+</nav>
 
 
 
