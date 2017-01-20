@@ -12,10 +12,17 @@
     <% include ../views/partials/_header %>
     </header>
 <div class= "btn-right">
-  <% for(var urlDatabase in urls) { %>
-    <li><%= urlDatabase + ': ' + urls[urlDatabase] %></li>
-    <form method="POST" action="/urls/<%= urlDatabase %>/delete">
+
+  <% for(var shortURL in urls) { %>
+  <%  if (user.id === urls[shortURL].user_id) { %>
+    <li><%= shortURL + ': ' + urls[shortURL].longURL + " (belongs to " + urls[shortURL].user_id + ")"%></li>
+    <form method="POST" action="/urls/<%= shortURL %>/delete">
         <input type="submit" value="Delete"></form> <%}  %>
+<% } %>
+
+
+
+
   </div>
 <br>
 <br>

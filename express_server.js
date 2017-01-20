@@ -7,7 +7,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 
 app.use(function(req, res, next){
-  res.locals.user_id = req.cookies.user_id;
+  // res.locals.user_id = req.cookies.user_id;
   res.locals.user = users[req.cookies.user_id]
   next();
 });
@@ -16,8 +16,8 @@ app.set("view engine", "ejs")
 
 
 function generateRandomString() {
-var result = Math.random().toString(36).substr(2, 6)
-return result
+  var result = Math.random().toString(36).substr(2, 6)
+  return result
 }
 
 function authenticate(email, password) {
@@ -53,7 +53,7 @@ const whitelist = ['/urls/login', '/urls/401', '/register'];
 
 
 app.use((req, res, next) => {
-  console.log(req.url);
+  console.log(req.method, req.url);
   if (req.cookies['user_id'] || whitelist.includes(req.url)) {
     next();
   } else {
@@ -83,21 +83,21 @@ app.post("/register", (req, res) => {
   let password = req.body["password"];
   let id = generateRandomString();
   for(let i in users) {
-    if (users[i]["email"] === email && users[i]["password"] === password)
-      res.redirect("400", {errorFeedback: 'User already found.'});
-      return users
-    }
-    if (email === "" && password === "") {
+    if (users[i]["email"] === email && users[i]["password"] === password) { // JH sez prolly small bug
       res.redirect("400");
-    } else {
-
-  users[id] = {
-    id,
-    email,
-    password
+      return;
+    }
   }
-  res.cookie("user_id", id)
-  res.redirect(302,"/urls/");
+  if (email === "" && password === "") { // JH sez prolly small bug
+    res.redirect("400");
+  } else {
+    users[id] = {
+      id,
+      email,
+      password
+    }
+    res.cookie("user_id", id)
+    res.redirect(302,"/urls/");
   }
 });
 
@@ -146,7 +146,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL]; // ADD: if longURL = null - go to 401
+  let longURL = urlDatabase[req.params.shortURL].longURL; // ADD: if longURL = null - go to 401
   console.log(urlDatabase); // ADD: needs to check for http and if not add it
   res.redirect(longURL);
 });
@@ -158,10 +158,10 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls/:id/edit", (req, res) => {
   let newLongURL = req.body.newLongURL
-  urlDatabase[req.params.id] = newLongURL
+  urlDatabase[req.params.id].longURL = newLongURL
   res.redirect(302,`http://localhost:8080/urls/${req.params.id}`);
   });
- 
+
   app.post("/logout", (req, res) => {
   username= req.cookies["user_id"]
   res.clearCookie("user_id", username);
@@ -171,7 +171,11 @@ app.post("/urls/:id/edit", (req, res) => {
 app.post("/urls/create", (req, res) => {
   let longURL = req.body["longURL"];
   let shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL
+  urlDatabase[shortURL]= {
+    longURL,
+    user_id: res.locals.user.id,
+  }
+  console.log(urlDatabase);
   res.redirect(302,`http://localhost:8080/urls/${shortURL}`);
 });
 
