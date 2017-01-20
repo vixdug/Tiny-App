@@ -3,6 +3,7 @@ var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
 var cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 
@@ -49,7 +50,7 @@ var users = {
 
 
 
-const whitelist = ['/urls/login', '/urls/401', '/register'];
+const whitelist = ['/urls/login', '/401', '/register'];
 
 
 app.use((req, res, next) => {
@@ -57,7 +58,7 @@ app.use((req, res, next) => {
   if (req.cookies['user_id'] || whitelist.includes(req.url)) {
     next();
   } else {
-    res.render("urls_401")
+    res.status(401).render("urls_401");
   }
 });
 
@@ -68,9 +69,9 @@ app.get("/", (req, res) => {
   res.render("urls_root", username);
 });
 
-app.get("/urls/401", (req, res) => {
+app.get("/401", (req, res) => {
   let username = {username: req.cookies["user_id"]}
-  res.render("urls_401", username);
+  res.status(401).render("urls_401");
 });
 
 app.get("/register", (req, res) => {
@@ -80,7 +81,8 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   let email = req.body["email"];
-  let password = req.body["password"];
+  let password = req.body["password"]; //bcrypt.hashSync(req.body
+  console.log(password);
   let id = generateRandomString();
   for(let i in users) {
     if (users[i]["email"] === email && users[i]["password"] === password) { // JH sez prolly small bug
@@ -137,7 +139,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { username: req.cookies["user_id"], urls: urlDatabase };
+  let templateVars = { username: req.cookies["user_id"], urls: urlDatabase, shortURL: req.params.id  };
   res.render("urls_index", templateVars);
 });
 
