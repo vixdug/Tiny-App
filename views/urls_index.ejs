@@ -11,15 +11,15 @@
   <header>
     <% include ../views/partials/_header %>
     </header>
-
+<div class= "btn-right">
   <% for(var urlDatabase in urls) { %>
     <li><%= urlDatabase + ': ' + urls[urlDatabase] %></li>
     <form method="POST" action="/urls/<%= urlDatabase %>/delete">
         <input type="submit" value="Delete"></form> <%}  %>
-<% console.log(urlDatabase) %>
+  </div>
 <br>
 <br>
-  <a href="urls/new" type="button" class="btn btn-info" >Shorten a new URL
+  <a href="http://localhost:8080/urls/new" type="button" class="btn btn-info" >Shorten a new URL
 </a>
 
 
