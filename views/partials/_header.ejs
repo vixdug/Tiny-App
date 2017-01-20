@@ -14,7 +14,7 @@
 
       </a>
     </div>
-    <h4 class="navbar-brand-2">Welcome <%= user.email %> !</h4>
+    <%if (user){%> <h4 class="navbar-brand-2">Welcome <%= user.email %> !</h4><%}%>
 
 
     <div class="collapse navbar-collapse" id="myNavbar">

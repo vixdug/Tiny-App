@@ -15,9 +15,13 @@
 
   <% for(var shortURL in urls) { %>
   <%  if (user.id === urls[shortURL].user_id) { %>
-    <li><%= shortURL + ': ' + urls[shortURL].longURL + " (belongs to " + urls[shortURL].user_id + ")"%></li>
+    <a href= "http://localhost:8080/urls/<%= shortURL %>/"> <%= shortURL + ': ' + urls[shortURL].longURL + " (belongs to " +  urls[shortURL].user_id + ")"%></a>
     <form method="POST" action="/urls/<%= shortURL %>/delete">
-        <input type="submit" value="Delete"></form> <%}  %>
+        <input class="btn btn-danger" type="submit" value="Delete"></form>
+<br>
+        <form method="GET" action="/urls/<%= shortURL %>">
+            <input class="btn btn-warning" type="submit" value="Edit"></form>
+            <%}  %>
 <% } %>
 
 
