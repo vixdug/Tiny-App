@@ -19,7 +19,7 @@ function generateRandomString() {
 var result = Math.random().toString(36).substr(2, 6)
 return result
 }
-
+ 
 function authenticate(email, password) {
   for (let user_id in users) {
     let user = users[user_id];
