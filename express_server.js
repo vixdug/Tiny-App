@@ -19,7 +19,7 @@ function generateRandomString() {
 var result = Math.random().toString(36).substr(2, 6)
 return result
 }
- 
+
 function authenticate(email, password) {
   for (let user_id in users) {
     let user = users[user_id];
@@ -161,7 +161,7 @@ app.post("/urls/:id/edit", (req, res) => {
   urlDatabase[req.params.id] = newLongURL
   res.redirect(302,`http://localhost:8080/urls/${req.params.id}`);
   });
-
+ 
   app.post("/logout", (req, res) => {
   username= req.cookies["user_id"]
   res.clearCookie("user_id", username);
