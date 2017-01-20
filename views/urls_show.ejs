@@ -32,7 +32,8 @@
   <tr>
     <th scope="row">1</th>
     <td> <%= shortURL %> </td>
-    <td> <%= longURL %> </td>
+    <td> <%= longURL.longURL %>
+</td>
   </tr>
   </tbody>
 </table>
@@ -43,7 +44,7 @@
 <form method="post" action="/urls/<%=shortURL%>/edit">
   <div class="col-lg-6">
     <div class="input-group">
-      <input type="text" id="newLongURL" class="form-control" name="newLongURL" placeholder="<%=longURL %>">
+      <input type="text" id="newLongURL" class="form-control" name="newLongURL" placeholder="<%=longURL.longURL%>">
       <span class="input-group-btn">
         <button class="btn btn-default" type="submit"  value="Submit">Edit!</button>
       </span>
