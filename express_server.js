@@ -1,34 +1,38 @@
 var express = require("express");
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
-var cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
+var cookieSession = require('cookie-session')
+
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser())
+
+app.use(cookieSession({
+  keys: ['Lighthouse Labs'],
+}))
 
 app.use(function(req, res, next){
-  // res.locals.user_id = req.cookies.user_id;
-  res.locals.user = users[req.cookies.user_id]
+  res.locals.user_id = req.session.user_id
+  res.locals.user = users[req.session.user_id]
   next();
 });
 
-app.set("view engine", "ejs")
-
-
-function generateRandomString() {
-  var result = Math.random().toString(36).substr(2, 6)
-  return result
-}
-
 app.use('/urls/:id/:action?', (req, res, next) => {
   const url = urlDatabase[req.params.id];
-  if (url && req.cookies.user_id !== url.user_id) {
+  if (url && req.session.user_id !== url.user_id) {
     res.status(403).send('You do not have permission to edit this');
     return;
   }
   next();
 });
+
+app.set("view engine", "ejs");
+
+
+function generateRandomString() {
+var result = Math.random().toString(36).substr(2, 6)
+return result;
+}
 
 function authenticate(email, password) {
   for (let user_id in users) {
@@ -71,7 +75,7 @@ const whitelist = ['/urls/login', '/401', '/register'];
 // could also add /urls*? to it so user lands on logn first
 app.use((req, res, next) => {
   console.log(req.method, req.url);
-  if (req.cookies['user_id'] || whitelist.includes(req.url)) {
+  if (req.session.user_id || whitelist.includes(req.url)) {
     next();
   } else {
     res.status(401).render("urls_401");
@@ -79,19 +83,17 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  let username = {username: req.cookies["user_id"]};
-  console.log(req.params.username);
-  console.log(username);
+  let username = {username: req.session.user_id};
   res.render("urls_root", username);
 });
 
 app.get("/401", (req, res) => {
-  let username = {username: req.cookies["user_id"]}
+  let username = {username: req.session.user_id}
   res.status(401).render("urls_401");
 });
 
 app.get("/register", (req, res) => {
-  let username = {username: req.cookies["user_id"]}
+  let username = {username: req.session.user_id}
   res.render("urls_register", username);
 });
 
@@ -115,7 +117,7 @@ app.post("/register", (req, res) => {
       email,
       password
     }
-    res.cookie("user_id", id)
+    req.session.user_id = id
     res.redirect(302,"/urls/");
   })
 
@@ -130,7 +132,7 @@ app.post("/urls/login", (req, res) => {
   let user_id = authenticate(email,password)
 
   if (user_id) {
-      res.cookie("user_id", user_id);
+    req.session.user_id = user_id
       res.redirect("/urls");
     }
     else {
@@ -142,12 +144,12 @@ app.post("/urls/login", (req, res) => {
 
 
 app.get("/urls/login", (req, res) => {
-let username = {username: req.cookies["user_id"]};
+let username = {username: req.session.user_id};
   res.render("urls_root",username); //copy templatevars idea to get username there.
 });
 
 app.get("/urls/new", (req, res) => {
-  let username= {username: req.cookies["user_id"]}
+  let username= {username: req.session.user_id}
   res.render("urls_new",username); //copy templatevars idea to get username there.
 });
 
@@ -156,7 +158,7 @@ app.get("/urls/:id", (req, res) => {
   const url = urlDatabase[req.params.id];
   if (url) {
     let templateVars = {
-      shortURL: req.params.id, longURL: url, username: req.cookies["user_id"]
+      shortURL: req.params.id, longURL: url, username: req.session.user_id
     };
     res.render("urls_show", templateVars);
   } else { // then send you are not owner then do another ELSE with the below statement
@@ -165,7 +167,7 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { username: req.cookies["user_id"], urls: urlDatabase, shortURL: req.params.id  };
+  let templateVars = { username: req.session.user_id, urls: urlDatabase, shortURL: req.params.id  };
   res.render("urls_index", templateVars);
 });
 
@@ -196,8 +198,7 @@ app.post("/urls/:id/edit", (req, res) => {
   });
 
   app.post("/logout", (req, res) => {
-  username= req.cookies["user_id"]
-  res.clearCookie("user_id", username);
+  req.session.user_id = null;
   res.redirect(302,"http://localhost:8080/");
 });
 
@@ -208,7 +209,6 @@ app.post("/urls/create", (req, res) => {
     longURL,
     user_id: res.locals.user.id,
   }
-  console.log(urlDatabase);
   res.redirect(302,`http://localhost:8080/urls/${shortURL}`);
 });
 
