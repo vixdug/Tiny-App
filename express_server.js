@@ -21,6 +21,15 @@ function generateRandomString() {
   return result
 }
 
+app.use('/urls/:id/:action?', (req, res, next) => {
+  const url = urlDatabase[req.params.id];
+  if (url && req.cookies.user_id !== url.user_id) {
+    res.status(403).send('You do not have permission to edit this');
+    return;
+  }
+  next();
+});
+
 function authenticate(email, password) {
   for (let user_id in users) {
     let user = users[user_id];
@@ -38,6 +47,15 @@ function authenticate(email, password) {
   return null;
 }
 
+function emailIsTaken(email) {
+  let taken = false ;
+  for (let id in users) {
+    if (users[id].email === email) {
+      taken = true;
+    }
+  }
+  return taken;
+};
 
 // {errorFeedback: 'failed to find a user'} you can put this in the login.
 
@@ -52,7 +70,7 @@ var users = {
 
 const whitelist = ['/urls/login', '/401', '/register'];
 
-
+// could also add /urls*? to it so user lands on logn first
 app.use((req, res, next) => {
   console.log(req.method, req.url);
   if (req.cookies['user_id'] || whitelist.includes(req.url)) {
@@ -80,19 +98,19 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  let email = req.body["email"];
-  let password = req.body["password"]; //bcrypt.hashSync(req.body
-  console.log(password);
-  let id = generateRandomString();
-  for(let i in users) {
-    if (users[i]["email"] === email && users[i]["password"] === password) { // JH sez prolly small bug
-      res.redirect("400");
-      return;
-    }
+  let email = req.body.email;
+  let password = req.body.password;
+  if (!email || !password) {
+    res.status(400);
+    res.send("no email");
+    return;
   }
-  if (email === "" && password === "") { // JH sez prolly small bug
-    res.redirect("400");
-  } else {
+  if (emailIsTaken(email)) {
+    res.status(400);
+    res.send("email is taken");
+    return;
+  }
+  const id = generateRandomString();
     users[id] = {
       id,
       email,
@@ -100,8 +118,11 @@ app.post("/register", (req, res) => {
     }
     res.cookie("user_id", id)
     res.redirect(302,"/urls/");
-  }
-});
+  })
+
+
+// app.post("/register", (req, res) => {
+
 
 app.post("/urls/login", (req, res) => {
   let email = req.body['email'];
@@ -131,11 +152,17 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new",username); //copy templatevars idea to get username there.
 });
 
-
+// followed along with DV lecture to refactor this.
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id, longURL: urlDatabase[req.params.id],  username: req.cookies["user_id"] };
-  res.render("urls_show", templateVars);
-
+  const url = urlDatabase[req.params.id];
+  if (url) {
+    let templateVars = {
+      shortURL: req.params.id, longURL: url, username: req.cookies["user_id"]
+    };
+    res.render("urls_show", templateVars);
+  } else { // then send you are not owner then do another ELSE with the below statement
+    res.status(404).send('short URL does not exist')
+  }
 });
 
 app.get("/urls", (req, res) => {
