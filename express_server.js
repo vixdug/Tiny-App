@@ -35,15 +35,15 @@ function authenticate(email, password) {
     let user = users[user_id];
 
     if (email === user.email) {
-      if (password === user.password) {
+      if (bcrypt.compare(password === user.password)) {
+        console.log(password);
+        console.log(user.password);
         return user_id;
       } else {
-        // found email but password didn't match
         return null;
       }
     }
   }
-  // didn't find user for that email
   return null;
 }
 
@@ -56,8 +56,6 @@ function emailIsTaken(email) {
   }
   return taken;
 };
-
-// {errorFeedback: 'failed to find a user'} you can put this in the login.
 
 var urlDatabase = {
 };
@@ -99,7 +97,8 @@ app.get("/register", (req, res) => {
 
 app.post("/register", (req, res) => {
   let email = req.body.email;
-  let password = req.body.password;
+  let password = bcrypt.hashSync(req.body.password, 10);
+  console.log(password);
   if (!email || !password) {
     res.status(400);
     res.send("no email");
@@ -152,7 +151,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new",username); //copy templatevars idea to get username there.
 });
 
-// followed along with DV lecture to refactor this.
+// followed along with DV lecture to refactor this. - if wrong revert from GH
 app.get("/urls/:id", (req, res) => {
   const url = urlDatabase[req.params.id];
   if (url) {
@@ -175,9 +174,14 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longURL; // ADD: if longURL = null - go to 401
+  const url = urlDatabase[req.params.shortURL]
+  if (url){
+  let longURL = url.longURL; // ADD: if longURL = null - go to 401
   console.log(urlDatabase); // ADD: needs to check for http and if not add it
   res.redirect(longURL);
+} else {
+  res.status(404).send('URL does not exist')
+}
 });
 
 app.post("/urls/:id/delete", (req, res) => {
