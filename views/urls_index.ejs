@@ -11,25 +11,43 @@
   <header>
     <% include ../views/partials/_header %>
     </header>
-<div class= "btn-right">
-
-  <% for(var shortURL in urls) { %>
-  <%  if (user.id === urls[shortURL].user_id) { %>
-    <a href= "http://localhost:8080/urls/<%= shortURL %>/"> <%= shortURL + ': ' + urls[shortURL].longURL + " (belongs to " +  urls[shortURL].user_id + ")"%></a>
-    <form method="POST" action="/urls/<%= shortURL %>/delete">
-        <input class="btn btn-danger" type="submit" value="Delete"></form>
-<br>
-        <form method="GET" action="/urls/<%= shortURL %>">
-            <input class="btn btn-warning" type="submit" value="Edit"></form>
-            <%}  %>
-<% } %>
-
-  </div>
-<br>
-<br>
-  <a href="http://localhost:8080/urls/new" type="button" class="btn btn-info" >Shorten a new URL
-</a>
-
-
-</body>
+  <div class= "home-table">
+<table class="table" id="urlTable">
+  <thead>
+    <tr>
+    <th> URLS </th>
+    <th> Your Short Form URL </th>
+    <th> Your Full URL </th>
+    <th> Edit </th>
+    <th> Delete </th>
+  </tr>
+  </thead>
+  </table>
+  <% for(var shortURL in urls) {  %>
+  <%  if (user.id === urls[shortURL].user_id) {   %>
+  <script>
+      function addRow() {
+        var table = document.getElementById('urlTable');
+        var row = table.insertRow(1);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+        cell1.innerHTML = "";
+        cell2.innerHTML = "<a href='/u/<%=shortURL%>'><%= shortURL %></a>";
+        cell3.innerHTML = "<%= urls[shortURL].longURL %>";
+        cell4.innerHTML = `<form method='POST' action='/urls/<%= shortURL %>/delete'>
+        <input class='btn btn-danger' type='submit' value='Delete'></form>`;
+        cell5.innerHTML = `<form method='GET' action='/urls/<%= shortURL %>'>
+        <input class='btn btn-warning' type='submit' value='Edit'></form>`;
+  }
+  addRow('urlTable');
+  </script>
+  <%} %>
+  <%}  %>
 </div>
+<br>
+<br>
+
+  <a href="http://localhost:8080/urls/new" type="button" class="btn btn-info" >Shorten a new URL
